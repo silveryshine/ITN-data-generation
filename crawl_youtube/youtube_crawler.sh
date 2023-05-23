@@ -174,3 +174,60 @@ fi
 
 # -------------------------------------------------------------------------------------------------------- #
 
+# -------------------------------------------------------------------------------------------------------- #
+# Added 18 October 2022, getting video ids and video
+#   vtt outputs, outputs will be good for sentence segmentation with times
+#   Tested in Linux
+
+# requires nltk (pip install nltk)
+
+## TODO update readme in sentence segmentation as time env.json struct is different in code compared to readme
+# TO FIX Why some VTT files doesn't work
+
+if [ ${stage} -eq 7 ]; then
+
+	echo 'Crawling for video, video ids, then output VTT transcription and sentence segmentation with times'
+
+	# !change output directory here!
+	out_dir="D:/study/singaporeMasters/master_project/term2/data/youtube_crawler/Chris@HoneyMoneySG"
+
+	python youtube_crawler.py --search-terms 'Chris @HoneyMoneySG' \
+	            --language en \
+	            --ids-dir video_ids \
+	            --min-duration 120 \
+	            --num-pages 5 \
+	            --verbose \
+		    --channel-only \
+	            --transcripts-dir ${out_dir}/transcripts \
+	            --mp4-dir ${out_dir}/mp4 \
+	            --wav-dir ${out_dir}/wav \
+	            --to-wav
+
+	# get ids and output to video_lists
+	python utils/create_video_ids_dir.py --path ${out_dir}
+
+	# create env.json file for sentence segmentation, call it sentence_segmention_env.json
+	#cur_dir= $(pwd) 			//will output linux directory which will not work for windows OS
+	cur_dir="$(echo "$(pwd)" | sed 's/^\///' | sed 's/^c/C/' | sed 's/^./\0:/')"
+	echo "{
+	\"sentence_segmentation_with_times\": {
+		\"input_type\": \"${out_dir}/folder/\",
+		\"path\": \"${out_dir}/normalized_vtt/\"
+	},
+	\"get_vtt_and_clean\": {
+		\"video_ids_dir\": \"${out_dir}/video_ids/\",
+		\"raw_vtt_dir\": \"${out_dir}/raw_vtt/\",
+		\"normalized_vtt_dir\": \"${out_dir}/normalized_vtt/\"
+	}
+}" > ${out_dir}/vtt_env.json
+
+	python ../get_vtt_and_clean/get_vtt.py --json ${out_dir}/vtt_env.json
+#	python ../get_vtt_and_clean/vtt_normalize.py --json ${out_dir}/vtt_env.json
+
+	# TODO do sentence segmentation to get sentences
+	python ../get_vtt_and_clean/sentence_segmentation_with_times.py --json ${out_dir}/vtt_env.json
+fi
+sleep 20
+# -------------------------------------------------------------------------------------------------------- #
+
+
