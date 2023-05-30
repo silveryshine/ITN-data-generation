@@ -190,14 +190,115 @@ def generate_talp_for_GIZA():
         a = 1
 
 
+def post_process():
+    file_dir = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence"
+    file_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\testout_real.tsv"
+    out_file = "testout_real_postprocessed.tsv"
+    to_output = []
+    num_flag = 0
+    with open(file_path, 'r') as fp:
+        lines = fp.readlines()
+        type = ""
+        before = ""
+        after = ""
+        for line in lines:
+            if len(line.strip()) == 0:
+                if type != "PLAIN" or len(before.split()) == 1:
+                    to_output.append([type, before, after])
+                type = ""
+                before = ""
+                after = ""
+                continue
+            if line.startswith('\t'):
+                after = after + " " + line.strip()
+                continue
+            line_split = line.split("\t")
+            if len(line_split) == 1:
+                before = before + line_split[0].strip()
+                type = get_type(line_split[0].strip())
+                continue
+            if len(type) != 0:
+                if type != "PLAIN" or len(before.split()) == 1:
+                    to_output.append([type, before, after])
+                type = ""
+                before = ""
+                after = ""
+            before = before + line_split[0].strip()
+            type = get_type(line_split[0].strip())
+            after = after + line_split[1].strip()
+
+    for line in to_output:
+        if line[0] == "PLAIN":
+            line[2] = "<self>"
+
+    out_path = os.path.join(file_dir, out_file)
+    with open(out_path, "w") as out_fp:
+        for line in to_output:
+            out_fp.write('\t'.join(line) + "\n")
+
+def get_type(instr:str):
+    for ch in instr:
+        if ch.isdigit():
+            return "DECIMAL"
+    return "PLAIN"
+
+def post_process_2():
+    file_dir = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence"
+    file_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\testout_real_postprocessed.tsv"
+    out_file = "testout_real_postprocessed_2.tsv"
+    out_path = os.path.join(file_dir, out_file)
+
+    with open(out_path, "w") as out_fp, open(file_path, 'r') as fp:
+        cnt = 0
+        lines = fp.readlines()
+        for line in lines:
+            if line.startswith('\t'):
+                continue
+            out_fp.write(line)
+            cnt += 1
+            if cnt == 10:
+                cnt = 0
+                out_fp.write("<eos>\t<eos>\n")
+
+
+def check_data_distribution():
+    file_dir = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_with_types"
+    type_dict = dict()
+    for file_name in os.listdir(file_dir):
+        file_path = os.path.join(file_dir, file_name)
+        print(file_name)
+        with open(file_path, 'r', encoding="utf-8") as fp:
+            lines = fp.readlines()
+            for line in lines:
+                type = line.split('\t')[0]
+                if type in type_dict.keys():
+                    type_dict[type] += 1
+                else:
+                    type_dict[type] = 1
+    for item in type_dict.items():
+        print(item[0] + '\t' + str(item[1]))
+
+
+
+
+
+
 
 if __name__ == '__main__':
-    appp = [0,1,2,3]
-    print(appp[:4])
+
+
+    # dicc = {
+    #     "a":1,
+    #     "b":2
+    # }
+    # for item in dicc.items():
+    #     print(item[0] + '\t' + str(item[1]))
     # main2()
-    generate_alignment_tsv()
+    # generate_alignment_tsv()
     # generate_bitext_youtube_wenet()
     # rescue()
     # separate_itn_tn_text()
     # generate_talp_for_GIZA()
     # generate_train_file()
+    # post_process_2()
+    check_data_distribution()
