@@ -277,7 +277,7 @@ if __name__=="__main__":
     #     config = json.load(j_obj)
 
     config = {
-        "api_key" : "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",   # "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"
+        "api_key" : "",
         "input_dir" : r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\segmented_text_with_times",
         "output_dir": r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\chatGPT",
     }
