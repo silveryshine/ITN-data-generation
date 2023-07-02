@@ -4,8 +4,13 @@ import os
 import re
 from datetime import time, datetime
 
+import jiwer
 import openai
 
+from utils import get_type
+
+WORD_TYPE = ["PLAIN", "DATE", "LETTERS", "CARDINAL", "VERBATIM", "DECIMAL", "MEASURE", "MONEY", "ORDINAL", "TIME", "ELECTRONIC",
+        "DIGIT", "FRACTION", "TELEPHONE", "ADDRESS", "PUNCT"]
 
 def main_dep(openai_key:str, input_dir:str, output_dir:str):
     openai.api_key = openai_key
@@ -231,39 +236,243 @@ def chat_with_GPT(in_str:str, openai_key: str) -> dict:
     # print(result)
     return result
 
+
+
+def chat_with_GPT_spoken_to_written(in_str:str, openai_key: str) -> dict:
+    conversation = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user",
+         "content": "Do you know about inverse text normalization that converts text from spoken to written form?"},
+        {"role": "assistant",
+         "content": """Yes, I'm familiar with inverse text normalization. It is a process that involves converting 
+         spoken language into written form, taking into account things like homophonic variations, punctuation, 
+         and capitalization. The goal is to create text that is grammatically correct and easily readable, 
+         while remaining faithful to the original spoken form. This process is often used in natural language 
+         processing applications such as speech recognition, as it helps to ensure that the output text is accurate 
+         and understandable."""},
+        {"role": "user",
+         "content": "Can you convert the following text: Doctor Dan is in room two four one and will be free at two thirty p.m. on January thrid, 2023."},
+        {"role": "assistant",
+         "content": """Sure, here's the inverse text normalization of the given text:
+         "Doctor Dan is in room 241 and will be free at 2:30 PM on January 3rd, 2023." """},
+        {"role": "user",
+         "content": "In ITN research, the words are marked in diverse types. Here are the commonly used types: PLAIN, DATE, LETTERS, CARDINAL, VERBATIM, DECIMAL, MEASURE, MONEY, ORDINAL, TIME, ELECTRONIC, DIGIT, FRACTION, TELEPHONE, ADDRESS, PUNCT. A widely used dataset called Google text normalization dataset uses this group of types."},
+        {"role": "assistant",
+         "content": """Thank you for providing the commonly used types in text normalization research. These types are indeed widely used in various text normalization tasks, including the Google text normalization dataset. Here's a brief description of each type:
+    1. PLAIN: Represents plain words or phrases that do not require any special normalization. These are typically regular words found in the text.
+    2. DATE: Represents expressions related to dates, such as "2023-05-31" or "May 31, 2023."
+    3. LETTERS: Represents sequences of letters, often used for alphabetic characters or words.
+    4. CARDINAL: Represents cardinal numbers, such as "123" or "one hundred twenty-three."
+    5. VERBATIM: Represents words or phrases that should be read exactly as they are written, without any modifications or normalizations.
+    6. DECIMAL: Represents decimal numbers, such as "3.14" or "three point one four."
+    7. MEASURE: Represents expressions related to measurements, such as "10 cm" or "5 kilograms."
+    8. MONEY: Represents expressions related to currency or monetary values, such as "$10" or "5 euros."
+    9. ORDINAL: Represents ordinal numbers, such as "1st," "2nd," or "third."
+    10. TIME: Represents expressions related to time, such as "2:30 p.m." or "12:00 PM."
+    11. ELECTRONIC: Represents electronic-related expressions, such as URLs, email addresses, or usernames.
+    12. DIGIT: Represents individual digits, typically used for numerical digits in isolation.
+    13. FRACTION: Represents fractions, such as "1/2" or "three-fourths."
+    14. TELEPHONE: Represents telephone numbers, such as "555-123-4567."
+    15. ADDRESS: Represents address-related expressions, such as street addresses or postal codes.
+    16. PUNCT: Represents punctuation marks, such as commas, periods, or question marks.
+    These types help categorize and handle different forms of text in the normalization process, enabling more accurate and consistent conversion of written text into spoken form."""},
+        {"role": "user",
+         "content": "can you extract the converted written and spoken form word pairs out into JSON format? Also add type for each word pair"},
+        {"role": "assistant",
+         "content": """Certainly! Here's an example of how the converted word pairs, along with their types, can be represented in JSON format:
+    ```json
+    {
+      "word_pairs": [
+        {
+          "written": "Doctor",
+          "spoken": "Doctor",
+          "type": "PLAIN"
+        },
+        {
+          "written": "Dan",
+          "spoken": "Dan",
+          "type": "PLAIN"
+        },
+        {
+          "written": "is",
+          "spoken": "is",
+          "type": "PLAIN"
+        },
+        {
+          "written": "in",
+          "spoken": "in",
+          "type": "PLAIN"
+        },
+        {
+          "written": "room",
+          "spoken": "room",
+          "type": "PLAIN"
+        },
+        {
+          "written": "241",
+          "spoken": "two forty-one",
+          "type": "CARDINAL"
+        },
+        {
+          "written": "and",
+          "spoken": "and",
+          "type": "PLAIN"
+        },
+        {
+          "written": "will",
+          "spoken": "will",
+          "type": "PLAIN"
+        },
+        {
+          "written": "be",
+          "spoken": "be",
+          "type": "PLAIN"
+        },
+        {
+          "written": "free",
+          "spoken": "free",
+          "type": "PLAIN"
+        },
+        {
+          "written": "at",
+          "spoken": "at",
+          "type": "PLAIN"
+        },
+        {
+          "written": "2:30pm",
+          "spoken": "two thirty p.m.",
+          "type": "TIME"
+        },
+        {
+          "written": "on",
+          "spoken": "on",
+          "type": "PLAIN"
+        },
+        {
+          "written": "Jan 3rd, 2023",
+          "spoken": "January thrid, twenty twenty three",
+          "type": "DATE"
+        },
+        {
+          "written": ".",
+          "spoken": ".",
+          "type": "PUNCT"
+        }
+      ]
+    }
+    ```
+    In this example, the "word_pairs" array contains individual word pairs, each represented as an object with three properties: "written" for the written form of the word, "spoken" for the spoken form of the word, and "type" indicating the type of the word according to the given classification. """},
+        {"role": "user",
+         "content": "Now do the same procedure on following sentence: " + in_str},
+    ]
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=conversation,
+        # temperature=0
+    )
+    assistant_reply = response['choices'][0]['message']['content']
+    print(assistant_reply)
+
+    regex_str = '```json[\S\s]*```'
+    find = re.findall(regex_str, assistant_reply)
+    result_json = find[0][7:-4]
+    # print(result_json)
+    result = json.loads(result_json)
+    # print(result)
+    return result
+
 def main(openai_key:str, input_dir:str, output_dir:str):
     openai.api_key = openai_key
+    print(os.path.exists(output_dir))
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
-    track_fp = open(os.path.join(output_dir, "completed.txt"), 'r')
-    completed = track_fp.readlines()
+    track_fp = open(os.path.join(output_dir, "completed.txt"), 'r', encoding="utf-8")
+    completed = [x.strip() for x in track_fp.readlines()]
     track_fp.close()
 
-    track_fp = open(os.path.join(output_dir, "completed.txt"), 'a')
+    track_fp = open(os.path.join(output_dir, "completed.txt"), 'a', encoding="utf-8")
 
-    out_fp = open(os.path.join(output_dir, "result" + str(datetime.now().timestamp()) + ".txt"), "w")
+    out_fp = open(os.path.join(output_dir, "result" + str(datetime.now().timestamp()) + ".txt"), "w", encoding='utf-8')
+
+    wer_fp = open(os.path.join(output_dir, "wer.txt"), 'a', encoding="utf-8")
+    bad_fp = open(os.path.join(output_dir, "bad.txt"), 'a', encoding="utf-8")
 
     for file_name in os.listdir(input_dir):
         if file_name in completed:
             continue
         print(file_name)
-        with open(os.path.join(input_dir, file_name), 'r') as in_fp:
+        with open(os.path.join(input_dir, file_name), 'r', encoding='utf-8') as in_fp:
             lines = in_fp.readlines()
             for line in lines:
-                line = " ".join(line.split()[2:])
-                print(line)
+                line = line.split("|||")
+                # line = " ".join(line.split()[2:])
+                # if get_type(line) == "PLAIN":
+                #     continue
+                print(line[1])
                 try:
-                    transformation_dict = chat_with_GPT(line, openai_key)
+                    transformation_dict = chat_with_GPT_spoken_to_written(line[1], openai_key)
+                    written_list = []
                     # print(transformation_dict)
                     for sub_dict in transformation_dict["word_pairs"]:
+                        written_list.append(sub_dict["written"])
                         out_fp.write(sub_dict["type"] + "\t" + sub_dict["written"] + "\t" + sub_dict["spoken"] + "\n")
                     out_fp.write("<eos>\t<eos>\n")
                     out_fp.flush()
-                except:
+                    wer_fp.write(str(jiwer.compute_measures(line[0], " ".join(written_list))['wer']) + "\n")
+                                    # jiwer.compute_measures(ref_split[0], line_split[0])['wer']
+                    wer_fp.flush()
+                except :
+                    out_fp.write("<eos>\t<eos>\n")
+                    out_fp.flush()
+                    wer_fp.write("-1\n")
+                    wer_fp.flush()
+                    bad_fp.write(line[1] + "\n")
+                    bad_fp.flush()
                     pass
         track_fp.write(file_name + '\n')
+        track_fp.flush()
     out_fp.close()
+    track_fp.close()
+
+
+def change_code_type(output_dir):
+    track_fp = open(os.path.join(output_dir, "completed.txt"), 'r', encoding="utf-8")
+    completed = track_fp.readlines()
+    track_fp.close()
+
+    track_fp = open(os.path.join(output_dir, "completed.txt"), 'w', encoding="utf-8")
+    for line in completed:
+        if line.startswith("0OI0MZJ9S6U"):
+            track_fp.write("0OI0MZJ9S6U.Budget 2022 ｜ What Singapore Finance Minister just said.en.vtt\n")
+        else:
+            track_fp.write(line)
+
+
+def post_process(output_dir:str):
+    final_file = os.path.join(output_dir, "postprocessed_result.tsv")
+    final_fp = open(final_file, 'w', encoding='utf-8')
+    for file_name in os.listdir(output_dir):
+        if not file_name.startswith("result"):
+            continue
+        file_path = os.path.join(output_dir, file_name)
+        with open(file_path, 'r', encoding='utf-8') as fp:
+            lines = fp.readlines()
+            for line in lines:
+                line_split = line.split('\t')
+                if len(line_split) == 2:
+                    final_fp.write(line)
+                elif len(line_split) == 3:
+                    if line_split[0] in WORD_TYPE:
+                        if line_split[0] == "PLAIN":
+                            line_split[2] = "<self>\n"
+                            if len(line_split[1].split()) > 1:
+                                continue
+                        final_fp.write('\t'.join(line_split))
+    final_fp.close()
+
+
 
 
 
@@ -277,10 +486,23 @@ if __name__=="__main__":
     #     config = json.load(j_obj)
 
     config = {
-        "api_key" : "",
-        "input_dir" : r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\segmented_text_with_times",
-        "output_dir": r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\chatGPT",
+        "text_generate": {
+            "api_key": "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", #"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",   # "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"
+            "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence", #"D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\segmented_text_with_times",
+            "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence_ChatGPT",#"D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\chatGPT"
+        },
+        "preprocess": {
+            "input_dir": "",
+            "output_dir": ""
+        }
     }
+    # { #TODO: delete api_key
+    #     "api_key" : "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", #"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",   # "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"
+    #     "input_dir" : r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\segmented_text_with_times",
+    #     "output_dir": r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\chatGPT",
+    # }
 
 
-    main(config["api_key"], config["input_dir"],config["output_dir"])
+    main(config["text_generate"]["api_key"], config["text_generate"]["input_dir"],config["text_generate"]["output_dir"])
+    # change_code_type(config["text_generate"]["output_dir"])
+    # post_process(config["text_generate"]["output_dir"])
