@@ -285,7 +285,7 @@ def check_data_distribution():
 
 
 if __name__ == '__main__':
-
+    import nltk
 
     # dicc = {
     #     "a":1,
@@ -301,4 +301,4 @@ if __name__ == '__main__':
     # generate_talp_for_GIZA()
     # generate_train_file()
     # post_process_2()
-    check_data_distribution()
+    # check_data_distribution()

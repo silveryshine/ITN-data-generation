@@ -33,29 +33,29 @@ def get_vtt_file(video_id, output_dir):
 # ------------------------------------------------------------------------------------------ #
 
 def main():
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--json", required=True)
-    # args = parser.parse_args()
-    #
-    # with open(args.json, "r") as j_obj:
-    #     config = json.load(j_obj)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--json", required=True)
+    args = parser.parse_args()
 
-    config = {
-        "sentence_segmentation": {
-            "input_type": "folder",
-            "path": "D:\\study\\singaporeMasters\\master project\\text-cleaning-2022\\manual\\transcripts\\Chicken Genius Singapore"
-        },
-        "sentence_segmentation_with_times": {
-            "input_type": "folder",
-            "path": "get_vtt_and_clean/normalized_vtt"
-        },
-        "get_vtt_and_clean": {
-            "video_ids_dir": "D:\\study\\singaporeMasters\\master project\\text-cleaning-2022\\manual",
-            "raw_vtt_dir": "D:\\study\\singaporeMasters\\master project\\text-cleaning-2022\\manual\\raw_vtts\\Jen Tan Property",
-            "normalized_vtt_dir": "D:\\study\\singaporeMasters\\master project\\text-cleaning-2022\\manual\\normalized_vtts\\Chicken Genius Singapore"
-        },
-        "folder_path": "D:\\study\\singaporeMasters\\master project\\text-cleaning-2022\\manual\\transcripts\\Chicken Genius Singapore"
-    }
+    with open(args.json, "r") as j_obj:
+        config = json.load(j_obj)
+
+    # config = {
+    #     "sentence_segmentation": {
+    #         "input_type": "folder",
+    #         "path": "D:\\study\\singaporeMasters\\master project\\text-cleaning-2022\\manual\\transcripts\\Chicken Genius Singapore"
+    #     },
+    #     "sentence_segmentation_with_times": {
+    #         "input_type": "folder",
+    #         "path": "get_vtt_and_clean/normalized_vtt"
+    #     },
+    #     "get_vtt_and_clean": {
+    #         "video_ids_dir": "D:\\study\\singaporeMasters\\master project\\text-cleaning-2022\\manual",
+    #         "raw_vtt_dir": "D:\\study\\singaporeMasters\\master project\\text-cleaning-2022\\manual\\raw_vtts\\Jen Tan Property",
+    #         "normalized_vtt_dir": "D:\\study\\singaporeMasters\\master project\\text-cleaning-2022\\manual\\normalized_vtts\\Chicken Genius Singapore"
+    #     },
+    #     "folder_path": "D:\\study\\singaporeMasters\\master project\\text-cleaning-2022\\manual\\transcripts\\Chicken Genius Singapore"
+    # }
 
     # Check whether the specified path exists or not
     video_ids_dir = config["get_vtt_and_clean"]["video_ids_dir"]

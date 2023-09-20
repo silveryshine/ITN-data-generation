@@ -62,6 +62,7 @@ def folders_check(dir1,dir2):
 
 
 def check_dir(dir2chk,verbose=False):
+	print(dir2chk)
 	if not os.path.isdir(dir2chk):
 		if verbose:
 			print('Making directory:',dir2chk)

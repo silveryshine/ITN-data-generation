@@ -1,10 +1,16 @@
 import os
+from _pydecimal import Decimal
+
+from unicodedata import decimal
+
 
 def google_dataset_preprocess(input_dir:str, output_dir:str, separated=True):
     file_names = []
     for file_name in os.listdir(input_dir):
         file_path = os.path.join(input_dir, file_name)
-        with open(file_path, 'r') as in_fp: #, encoding='utf-8'
+        if os.path.isdir(file_path):
+            continue
+        with open(file_path, 'r', encoding='utf-8') as in_fp: #, encoding='utf-8'
             lines =  in_fp.readlines()
             out_fp = None
             cnt_file = 0
@@ -40,6 +46,23 @@ def google_dataset_preprocess(input_dir:str, output_dir:str, separated=True):
     return file_names
 
 
+def cal_wer():
+    path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_with_types_sentence_ChatGPT\wer.txt"
+
+    with open(path, "r", encoding="utf-8") as fp:
+        cnt = 0
+        sum = 0
+        lines = fp.readlines()
+        for line in lines:
+            wer = float(line.strip())
+            if wer < 0:
+                continue
+            sum += wer
+            cnt += 1
+    print(cnt)
+    print(sum/cnt)
+
+
 
 
 def main():
@@ -68,4 +91,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    cal_wer()

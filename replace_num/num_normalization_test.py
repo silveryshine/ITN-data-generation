@@ -3,7 +3,7 @@ sys.path.append(r"D:\study\singaporeMasters\master_project\chng-pipeline")
 
 import os
 import number_replace
-import data_crawl_preprocess.cal_wer as cal_wer
+import cal_wer as cal_wer
 
 
 def check_value(v) -> bool:

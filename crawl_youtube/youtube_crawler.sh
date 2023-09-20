@@ -3,6 +3,11 @@
 # This script contains usage for customise search terms and transcription languages
 
 stage=$1
+out_base_dir=$2
+youtuber=$3
+
+echo $stage
+echo $youtuber
 
 # -------------------------------------------------------------------------------------------------------- #
 #
@@ -125,7 +130,7 @@ if [ ${stage} -eq 4 ]; then
   done
 fi
 
-sleep 10000
+#sleep 10000
 
 
 
@@ -189,25 +194,27 @@ if [ ${stage} -eq 7 ]; then
 	echo 'Crawling for video, video ids, then output VTT transcription and sentence segmentation with times'
 
 	# !change output directory here!
-	out_dir="D:/study/singaporeMasters/master_project/term2/data/youtube_crawler/Chris@HoneyMoneySG"
+	out_dir=$out_base_dir"/"${youtuber}
 
-	python youtube_crawler.py --search-terms 'Chris @HoneyMoneySG' \
+
+	python youtube_crawler.py --search-terms "${youtuber}" \
 	            --language en \
 	            --ids-dir video_ids \
 	            --min-duration 120 \
 	            --num-pages 5 \
 	            --verbose \
 		    --channel-only \
-	            --transcripts-dir ${out_dir}/transcripts \
-	            --mp4-dir ${out_dir}/mp4 \
-	            --wav-dir ${out_dir}/wav \
+	            --transcripts-dir "${out_dir}"/transcripts \
+	            --mp4-dir "${out_dir}"/mp4 \
+	            --wav-dir "${out_dir}"/wav \
 	            --to-wav
 
-	# get ids and output to video_lists
-	python utils/create_video_ids_dir.py --path ${out_dir}
 
-	# create env.json file for sentence segmentation, call it sentence_segmention_env.json
-	#cur_dir= $(pwd) 			//will output linux directory which will not work for windows OS
+  get ids and output to video_lists
+  python utils/create_video_ids_dir.py --path "${out_dir}"
+
+  create env.json file for sentence segmentation, call it sentence_segmention_env.json
+	cur_dir= $(pwd) 			//will output linux directory which will not work for windows OS
 	cur_dir="$(echo "$(pwd)" | sed 's/^\///' | sed 's/^c/C/' | sed 's/^./\0:/')"
 	echo "{
 	\"sentence_segmentation_with_times\": {
@@ -217,17 +224,19 @@ if [ ${stage} -eq 7 ]; then
 	\"get_vtt_and_clean\": {
 		\"video_ids_dir\": \"${out_dir}/video_ids/\",
 		\"raw_vtt_dir\": \"${out_dir}/raw_vtt/\",
-		\"normalized_vtt_dir\": \"${out_dir}/normalized_vtt/\"
+		\"normalized_vtt_dir\": \"${out_dir}/normalized_vtt/\",
+		\"word_time_split_dir\": \"${out_dir}/word_time_split/\"
 	}
-}" > ${out_dir}/vtt_env.json
+}" > "${out_dir}"/vtt_env.json
 
-	python ../get_vtt_and_clean/get_vtt.py --json ${out_dir}/vtt_env.json
-#	python ../get_vtt_and_clean/vtt_normalize.py --json ${out_dir}/vtt_env.json
+	python ../get_vtt_and_clean/get_vtt.py --json "${out_dir}"/vtt_env.json
+	python ../get_vtt_and_clean/vtt_normalize.py --json "${out_dir}"/vtt_env.json
 
 	# TODO do sentence segmentation to get sentences
-	python ../get_vtt_and_clean/sentence_segmentation_with_times.py --json ${out_dir}/vtt_env.json
+	python ../get_vtt_and_clean/sentence_segmentation_with_times.py --json "${out_dir}"/vtt_env.json
 fi
 sleep 20
 # -------------------------------------------------------------------------------------------------------- #
 
+#D:\study\singaporeMasters\master_project\term2\repository\to_submit\ITN-data-generation\crawl_youtube>D:/study/singaporeMasters/master_project/term2/repository/to_submit/ITN-data-generation/crawl_youtube/youtube_crawler.sh 7 "D:/study/singaporeMasters/master_project/term2/repository/to_submit/data" "Chris @HoneyMoneySG"
 
