@@ -55,5 +55,12 @@ First do data pre-processing. Use generate_train_file() in utils.py to generate 
 Then follow Cross-Align's instruction to train the model and inference. 
 Use utils.generate_bitext_youtube_wenet() to generate input from fetched data and utils.generate_alignment_tsv to generate dataset in format same to Google text normalization dataset.
 At last, use generate_alignment_tsv(), post_process(), and post_process_2() in utils.py to reformat and clean the outputs.
+```
+./model_train_inference/generate_train_test_file.py --json ./model_train_inference/env.json
+```
+```
+./model_train_inference/generate_dataset.py --json ./model_train_inference/env.json
+```
+Remember to modify parameters in env.json before running the script.
 
 
