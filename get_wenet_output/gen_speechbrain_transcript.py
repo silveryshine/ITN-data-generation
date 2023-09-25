@@ -86,6 +86,7 @@ def gen_transcripts_and_save(input_dir_path, output_dir_path, model):
 
     print('done')
 
+# generate transcript using speechbrain model
 def gen_transcripts(input_file_path, model):
     # Use a breakpoint in the code line below to debug your script.
     # print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
@@ -146,30 +147,6 @@ def gen_transcripts(input_file_path, model):
                     print(transcript)
         print(file + ' complete')
     return ' '.join(transcripts)
-
-
-def main2():
-    with open(
-            r'D:\study\singaporeMasters\master project\chng-pipeline\JoshTanTheAstuteParent\transcripts-asr-crdnn'
-            r'-rnnlm-librispeech\l7chhIs_0Lc.txt',
-            'r+') as in_file, \
-            open(
-                r'D:\study\singaporeMasters\master project\chng-pipeline\JoshTanTheAstuteParent\transcripts-asr-crdnn'
-                r'-rnnlm-librispeech\l7chhIs_0Lc2.txt',
-                'w+') as out_file:
-        lines = in_file.readlines()
-        for line in lines:
-            out_file.writelines(line.lower())
-
-def main3():
-    scripts = []
-    path = r'D:\study\singaporeMasters\master project\git\score-wer-online\testresult'
-    for file in os.listdir(path):
-        with open(os.path.join(path, file), 'r+') as f:
-            script = f.read()
-            scripts.append(file + ' ' + script)
-    with open(os.path.join(path, 'asr-wenet.txt'), 'w+') as f:
-        f.writelines('\n'.join(scripts))
 
 
 # Press the green button in the gutter to run the script.

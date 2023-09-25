@@ -37,15 +37,23 @@ If need to switch to better segmentor, please refer to ./get_vtt_and_clean/sente
 
 # step 2: generate spoken form transcript
 In this step, the audios are divided in sentence level and generate sentence level transcript using WeNet ASR. Note to setup a WeNet ASR server before running. 
-If need to connect to a local WenNet, please see ./get_wenet_output/test_local_wenet.py
+First, generate the segmented wav files:
+```
+./generate_separated_wav_transcript.sh "D:/study/singaporeMasters/master_project/term2/repository/to_submit/data" "Chris @HoneyMoneySG"
+```
+Then, run script to get ASR result from server.
 ```
 ./get_wenet_output/gen_transcript_analyse_save.sh "<wav_dir>" <server_port> <if_using_hot_words> "<output_dir>" "<Optional:ground_truth_dir>"
 ```
+If need to connect to a local WenNet, please refer to ./get_wenet_output/test_local_wenet.py
 The pipeline also supports other model on speechbrain. If need to add model, please refer to ./get_wenet_output/gen_transcript_analyse_save.py line 93 and ./get_wenet_output/generate_separated_wav_transcript.py line 303. 
-speechbrain models are available when ground_truth is provided.
+speechbrain models are available when "<Optional:ground_truth_dir>" is provided.
 
 # step 3: train model and inference
 [Text Normalization for English, Russian and Polish](https://www.kaggle.com/datasets/richardwilliamsproat/text-normalization-for-english-russian-and-polish) released by Google is used to train and test the model.
-First do data pre-processing. Use generate_train_file() in utils.py to generate required format of Cross-Align along with ground truth alignment. Then follow Cross-Align's instruction to train the model and inference. Lastly, use utils.generate_bitext_youtube_wenet() to generate input from fetched data and utils.generate_alignment_tsv to generate dataset in format same to Google text normalization dataset.
+First do data pre-processing. Use generate_train_file() in utils.py to generate required format of Cross-Align along with ground truth alignment. 
+Then follow Cross-Align's instruction to train the model and inference. 
+Use utils.generate_bitext_youtube_wenet() to generate input from fetched data and utils.generate_alignment_tsv to generate dataset in format same to Google text normalization dataset.
+At last, use generate_alignment_tsv(), post_process(), and post_process_2() in utils.py to reformat and clean the outputs.
 
 

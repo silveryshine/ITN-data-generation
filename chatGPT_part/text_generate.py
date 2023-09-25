@@ -572,19 +572,6 @@ def main(openai_key:str, input_dir:str, output_dir:str, double_stage:bool = True
     log_fp.close()
 
 
-def change_code_type(output_dir):
-    track_fp = open(os.path.join(output_dir, "completed.txt"), 'r', encoding="utf-8")
-    completed = track_fp.readlines()
-    track_fp.close()
-
-    track_fp = open(os.path.join(output_dir, "completed.txt"), 'w', encoding="utf-8")
-    for line in completed:
-        if line.startswith("0OI0MZJ9S6U"):
-            track_fp.write("0OI0MZJ9S6U.Budget 2022 ｜ What Singapore Finance Minister just said.en.vtt\n")
-        else:
-            track_fp.write(line)
-
-
 def post_process(output_dir:str):
     final_file = os.path.join(output_dir, "postprocessed_result.tsv")
     final_fp = open(final_file, 'w', encoding='utf-8')
@@ -618,29 +605,25 @@ if __name__=="__main__":
 
 
 
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--json", required=True)
-    # args = parser.parse_args()
-    #
-    # with open(args.json, "r") as j_obj:
-    #     config = json.load(j_obj)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--json", required=True)
+    args = parser.parse_args()
 
-    config = {
-        "text_generate": {
-            "api_key": "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",#"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", #"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", #"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",   # "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"
-            "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence", #"D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\segmented_text_with_times",
-            "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence_ChatGPT",#"D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\chatGPT"
-        },
-        "preprocess": {
-            "input_dir": "",
-            "output_dir": ""
-        }
-    }
-    # { #TODO: delete api_key
-    #     "api_key" : "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", #"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",   # "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"
-    #     "input_dir" : r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\segmented_text_with_times",
-    #     "output_dir": r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\chatGPT",
+    with open(args.json, "r") as j_obj:
+        config = json.load(j_obj)
+
+    # config = {
+    #     "text_generate": {
+    #         "api_key":
+    #         "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence", #"D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\segmented_text_with_times",
+    #         "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence_ChatGPT",#"D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\chatGPT"
+    #     },
+    #     "preprocess": {
+    #         "input_dir": "",
+    #         "output_dir": ""
+    #     }
     # }
+
 
 
     main(config["text_generate"]["api_key"], config["text_generate"]["input_dir"],config["text_generate"]["output_dir"], True)

@@ -1,3 +1,5 @@
+import argparse
+import json
 import os
 import string
 
@@ -7,6 +9,7 @@ import GPT_utils
 import cal_wer
 
 
+# calculate wer for chatGPT result
 def sentence_wer_check(reference_dir:str, input_dir:str, output_dir:str):
     # structed_file_path = os.path.join(input_dir, "structured.txt")
     structured_file_name = GPT_utils.google_dataset_preprocess(input_dir, output_dir, False)
@@ -102,13 +105,9 @@ def wer_by_sentence():
             sum += jiwer.compute_measures(line_split[0].strip().lower(), line_split[1].strip().lower())['wer']
         print((sum*1.0)/cnt)
 
-
-
-
-
     pass
 
-
+# calculate certain type count
 def analysis():
     path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_with_types_sentence_ChatGPT\result1688994941.252537.txt"
     cardinal_cnt = 0
@@ -126,37 +125,36 @@ def analysis():
 
 
 def main():
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--json", required=True)
-    # args = parser.parse_args()
-    #
-    # with open(args.json, "r") as j_obj:
-    #     config = json.load(j_obj)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--json", required=True)
+    args = parser.parse_args()
 
-    config = {
-        "text_generate": {
-            "api_key": "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",
-            # "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",   # "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"
-            "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\segmented_text_with_times",
-            "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\chatGPT"
-        },
-        "preprocess": {
-            "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types",
-            "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence",
-            "log": ""
-        },
-        "text_analysis": {
-            "reference_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence",
-            "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence_ChatGPT",
-            "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence_ChatGPT_analysis"
-        }
-    }
+    with open(args.json, "r") as j_obj:
+        config = json.load(j_obj)
+
+    # config = {
+    #     "text_generate": {
+    #         "api_key": "",
+    #         "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\segmented_text_with_times",
+    #         "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\chatGPT"
+    #     },
+    #     "preprocess": {
+    #         "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types",
+    #         "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence",
+    #         "log": ""
+    #     },
+    #     "text_analysis": {
+    #         "reference_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence",
+    #         "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence_ChatGPT",
+    #         "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence_ChatGPT_analysis"
+    #     }
+    # }
     sentence_wer_check(config["text_analysis"]["reference_dir"], config["text_analysis"]["input_dir"], config["text_analysis"]["output_dir"])
     pass
 
 
 if __name__ == "__main__":
-    print(jiwer.compute_measures("Retrieved the 9th of July, 2012.", "Retrieved 9 July 2012 .")['wer'])
+    # print(jiwer.compute_measures("Retrieved the 9th of July, 2012.", "Retrieved 9 July 2012 .")['wer'])
     analysis()
     # main()
     # wer_by_sentence()

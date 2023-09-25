@@ -1,10 +1,10 @@
 import os
 
-## generate files for word alignment training.
-def generate_train_file():
-    infile_dir_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_with_types"
-    outfile_dir_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence"
-    infile_dir_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_with_types_split\test"
+## generate files for word alignment training. This function is for google text normalization dataset
+def generate_train_file(infile_dir_path, outfile_dir_path):
+    # infile_dir_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_with_types"
+    # outfile_dir_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence"
+    # infile_dir_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_with_types_split\test"
     limit = 5
     cnt = 0
     outfile_name = "test.itn-tn"
@@ -54,12 +54,12 @@ def generate_train_file():
 
 
 ## generate result dataset using the paralleled sentence and generated alignment
-def generate_alignment_tsv():
-    data_dir_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\test"
-    test_data = os.path.join(data_dir_path, "test_real.itn-tn")
-    out_alignment = os.path.join(data_dir_path, "gizapp-itntn.out")
+def generate_alignment_tsv(data_dir_path, test_data, out_alignment, output_name='result_alignment'):
+    # data_dir_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\test"
+    # test_data = os.path.join(data_dir_path, "test_real.itn-tn")
+    # out_alignment = os.path.join(data_dir_path, "gizapp-itntn.out")
 
-    out_file_fp = open(os.path.join(data_dir_path,"testout_real_gizapp.tsv"), "w+", encoding='utf-8')
+    out_file_fp = open(os.path.join(data_dir_path, output_name), "w+", encoding='utf-8')
 
     with open(test_data, 'r', encoding='utf-8') as test_fp, open(out_alignment, 'r', encoding='utf-8') as out_align_fp:
         test_lines = test_fp.readlines()
@@ -88,10 +88,10 @@ def generate_alignment_tsv():
 
 
 ## generate testset from youtube and wenet transcript
-def generate_bitext_youtube_wenet():
-    wenet_dir = r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\wenet_transcript"
-    youtube_dir = r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\segmented_wav"
-    out_dir = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence"
+def generate_bitext_youtube_wenet(wenet_dir, youtube_dir, out_dir):
+    # wenet_dir = r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\wenet_transcript"
+    # youtube_dir = r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\segmented_wav"
+    # out_dir = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence"
 
     to_generate = []
 
@@ -114,6 +114,7 @@ def generate_bitext_youtube_wenet():
 
 
 ## for data regain
+# deprecated
 def rescue():
     wenet_dir = r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\wenet_transcript"
     youtube_dir = r"D:\study\singaporeMasters\master_project\term2\data\youtube_crawler\Chris@HoneyMoneySG\segmented_wav"
@@ -145,11 +146,14 @@ def rescue():
                 file_fp.write(' '.join(to_write_back))
 
 
-def separate_itn_tn_text():
-    data_dir_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\test"
-    with open(os.path.join(data_dir_path, "test.itn-tn"), 'r', encoding='utf-8') as fp:
-        with open(os.path.join(data_dir_path, "test_itn.txt"), 'w', encoding='utf-8') as itn_fp, \
-                open(os.path.join(data_dir_path, "test_tn.txt"), 'w', encoding='utf-8') as tn_fp:
+def separate_itn_tn_text(data_dir_path, file_name="test.itn-tn"):
+    # data_dir_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\test"
+    with open(os.path.join(data_dir_path, file_name), 'r', encoding='utf-8') as fp:
+        name = file_name.split('.')
+        from_name = name[0] + "_" + name[1].split('-')[0] + '.txt'
+        to_name = name[0] + "_" + name[1].split('-')[1] + '.txt'
+        with open(os.path.join(data_dir_path, from_name), 'w', encoding='utf-8') as itn_fp, \
+                open(os.path.join(data_dir_path, to_name), 'w', encoding='utf-8') as tn_fp:
             lines = fp.readlines()
             for line in lines:
                 line = line.strip().split(" ||| ")
@@ -159,8 +163,8 @@ def separate_itn_tn_text():
                 tn_fp.write(line[1] + '\n')
 
 
-def generate_talp_for_GIZA():
-    file_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\test\test_real_GIZA.A3.final"
+def generate_talp_for_GIZA(file_path):
+    # file_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\test\test_real_GIZA.A3.final"
     result = []
     with open(file_path, 'r', encoding='utf-8') as fp:
         lines = fp.readlines()
@@ -190,10 +194,10 @@ def generate_talp_for_GIZA():
         a = 1
 
 
-def post_process():
-    file_dir = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence"
-    file_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\testout_real.tsv"
-    out_file = "testout_real_postprocessed.tsv"
+def post_process(file_dir, file_path, out_file):
+    # file_dir = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence"
+    # file_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\testout_real.tsv"
+    # out_file = "testout_real_postprocessed.tsv"
     to_output = []
     num_flag = 0
     with open(file_path, 'r') as fp:
@@ -242,10 +246,10 @@ def get_type(instr:str):
             return "DECIMAL"
     return "PLAIN"
 
-def post_process_2():
-    file_dir = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence"
-    file_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\testout_real_postprocessed.tsv"
-    out_file = "testout_real_postprocessed_2.tsv"
+def post_process_2(file_dir, file_path, out_file):
+    # file_dir = r".D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence"
+    # file_path = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_sentence\testout_real_postprocessed.tsv"
+    # out_file = "testout_real_postprocessed_2.tsv"
     out_path = os.path.join(file_dir, out_file)
 
     with open(out_path, "w") as out_fp, open(file_path, 'r') as fp:
@@ -261,8 +265,9 @@ def post_process_2():
                 out_fp.write("<eos>\t<eos>\n")
 
 
-def check_data_distribution():
-    file_dir = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_with_types"
+# check the counts of different types
+def check_data_distribution(file_dir):
+    # file_dir = r"D:\study\singaporeMasters\master_project\term2\data\google_text_normalization_dataset\en_with_types"
     type_dict = dict()
     for file_name in os.listdir(file_dir):
         file_path = os.path.join(file_dir, file_name)

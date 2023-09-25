@@ -14,9 +14,9 @@ echo $youtuber
 # Here is the main use case:
 
 if [ $stage -eq 1 ]; then
-	
+
 	echo Searching videos, filter by duration, then fetch audio and english transcription
- 
+
 	python youtube_crawler.py --search-terms singapore_covid19 cna_covid19 sg_cna_covid \
 				--language en \
 				--wav-dir covid_english/wav \
@@ -31,8 +31,8 @@ fi
 # The above command will search youtube for the following:
 #
 # 		'singapore covid19', 'cna covid19' and 'sg cna covid'
-# 
-# Then it will pick videos with length greater than 6000s (1.4 hrs) in the first 100 pages of search results 
+#
+# Then it will pick videos with length greater than 6000s (1.4 hrs) in the first 100 pages of search results
 # The language id is set to 'en', i.e. english, so it will only check for presence of english transcriptions
 # Then it will grab the transcripts+audio from youtube, save to the transcripts-dir and mp4-dir respectively
 # Since 'to-wav' is set to true, the mp4 files will be converted to wav files
@@ -44,20 +44,20 @@ fi
 
 # -------------------------------------------------------------------------------------------------------- #
 #
-# Another example. Search indonesian news, filter duration of > 20mins, using first 5 pages of results, 
+# Another example. Search indonesian news, filter duration of > 20mins, using first 5 pages of results,
 # fetch indonesian transcripts, but save as mp4 file, i.e. no conversion to wav
 
 if [ ${stage} -eq 2 ]; then
-	
+
 	echo Searching indonesian news channels, then fetch audio and indoneisan transcription
- 
+
 	python youtube_crawler.py --search-terms tribunnews metrotvnews KOMPASTV detikcom \
 				--language id \
 				--mp4-dir news_indon/mp4 \
 				--transcripts-dir news_indon/transcripts \
 				--min-duration 1200 \
 				--num-pages 5 \
-				--verbose 
+				--verbose
 fi
 
 # The default indonesian language id is 'id'. Since --to-wav is not set, no mp4 will be converted.
@@ -67,14 +67,14 @@ fi
 
 
 # -------------------------------------------------------------------------------------------------------- #
-# 
+#
 # Another example, search by individual channels, use the --channel-only option. This will filter the results
 # by channel first. The top 10 singaporean channels are avalaible in the file "sing_top10.txt"
 
-if [ ${stage} -eq 3 ]; then 
-	
+if [ ${stage} -eq 3 ]; then
+
 	echo Searching individual channels, then fetch audio and transcription
- 
+
 	sg_youtubers=`less sing_top10.txt`
 	for youtuber in ${sg_youtubers};
 	do
@@ -88,7 +88,7 @@ if [ ${stage} -eq 3 ]; then
 					--verbose \
 					--to-wav \
 					--channel-only
-		
+
 	done
 fi
 
@@ -101,12 +101,12 @@ fi
 
 # -------------------------------------------------------------------------------------------------------- #
 #
-# Another example, crawl single chanel 'Eatbook' for MANUAL transcriptions. Use the --use-manual option to 
+# Another example, crawl single chanel 'Eatbook' for MANUAL transcriptions. Use the --use-manual option to
 # specify the choice. In the example below, we search the first 10 results pages from the youtube channel
 # 'Eatbook', filter videos greater than 2 mins and fetch the MANUALLY transcribed english text.
 
 if [ ${stage} -eq 4 ]; then
-	
+
 	echo Crawling for MANUALLY transcribed wav files
 # Dr wealth    chicken genius    jentan
   myYoutubers=("WhatTheFlak?!")  #"Jen Tan Property" "Chris @HoneyMoneySG" "Dr Wealth" "Chicken Genius Singapore" "Bluebird Bros" "WhatTheFlak?!"
@@ -141,13 +141,13 @@ fi
 # -------------------------------------------------------------------------------------------------------- #
 #
 # Crawl radio data. Set the --sample-rate to 8000, default is at 16kHz. The youtube
-# channel 'pdgls' is where the owner scans American skies for short wave radio chatter. For this example, 
+# channel 'pdgls' is where the owner scans American skies for short wave radio chatter. For this example,
 # use the --audio-only option to crawl for ONLY AUDIO data, regardless the presence of transcripts
 
 if [ ${stage} -eq 5 ]; then
-	
+
 	echo Crawling for RADIO wav files, without transcription
- 
+
 	python youtube_crawler.py --search-terms pdgls \
 				--mp4-dir radio_8kHz/mp4 \
 				--wav-dir radio_8kHz/wav \
@@ -161,13 +161,13 @@ if [ ${stage} -eq 5 ]; then
 fi
 
 # -------------------------------------------------------------------------------------------------------- #
-# Final Example, getting video ids only 
+# Final Example, getting video ids only
 # use the --id-only option to crawl for ONLY video ids, regardless the presence of transcripts
 
 if [ ${stage} -eq 6 ]; then
-	
+
 	echo Crawling for video ids, without transcription
- 
+
 	python youtube_crawler.py --search-terms 'Singapore covid news' \
 				--language en \
 				--ids-dir video_ids \
@@ -226,17 +226,22 @@ if [ ${stage} -eq 7 ]; then
 		\"raw_vtt_dir\": \"${out_dir}/raw_vtt/\",
 		\"normalized_vtt_dir\": \"${out_dir}/normalized_vtt/\",
 		\"word_time_split_dir\": \"${out_dir}/word_time_split/\"
+	},
+	\"generate_separated_wav_transcript\": {
+	  \"input_folder\": \"${out_dir}/wav/\",
+	  \"transcript_folder\": \"${out_dir}/segmented_text_with_times\",
+	  \"output_folder\":  \"${out_dir}/segmented_wav\"
 	}
 }" > "${out_dir}"/vtt_env.json
 
 	python ../get_vtt_and_clean/get_vtt.py --json "${out_dir}"/vtt_env.json
 	python ../get_vtt_and_clean/vtt_normalize.py --json "${out_dir}"/vtt_env.json
 
-	# TODO do sentence segmentation to get sentences
+	# do sentence segmentation to get sentences
 	python ../get_vtt_and_clean/sentence_segmentation_with_times.py --json "${out_dir}"/vtt_env.json
 fi
 sleep 20
 # -------------------------------------------------------------------------------------------------------- #
 
-#D:\study\singaporeMasters\master_project\term2\repository\to_submit\ITN-data-generation\crawl_youtube>D:/study/singaporeMasters/master_project/term2/repository/to_submit/ITN-data-generation/crawl_youtube/youtube_crawler.sh 7 "D:/study/singaporeMasters/master_project/term2/repository/to_submit/data" "Chris @HoneyMoneySG"
+#D:/study/singaporeMasters/master_project/term2/repository/to_submit/ITN-data-generation/crawl_youtube/youtube_crawler.sh 7 "D:/study/singaporeMasters/master_project/term2/repository/to_submit/data" "Chris @HoneyMoneySG"
 

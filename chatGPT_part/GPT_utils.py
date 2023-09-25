@@ -1,3 +1,5 @@
+import argparse
+import json
 import os
 from _pydecimal import Decimal
 
@@ -66,25 +68,25 @@ def cal_wer():
 
 
 def main():
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--json", required=True)
-    # args = parser.parse_args()
-    #
-    # with open(args.json, "r") as j_obj:
-    #     config = json.load(j_obj)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--json", required=True)
+    args = parser.parse_args()
 
-    config = {
-        "text_generate": {
-            "api_key": "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", #"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",   # "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"
-            "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\segmented_text_with_times",
-            "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\chatGPT"
-        },
-        "preprocess": {
-            "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types",
-            "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence",
-            "log":""
-        }
-    }
+    with open(args.json, "r") as j_obj:
+        config = json.load(j_obj)
+
+    # config = {
+    #     "text_generate": {
+    #         "api_key":
+    #         "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\segmented_text_with_times",
+    #         "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\youtube_crawler\\Chris@HoneyMoneySG\\chatGPT"
+    #     },
+    #     "preprocess": {
+    #         "input_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types",
+    #         "output_dir": "D:\\study\\singaporeMasters\\master_project\\term2\\data\\google_text_normalization_dataset\\en_with_types_sentence",
+    #         "log":""
+    #     }
+    # }
 
     google_dataset_preprocess(config["preprocess"]["input_dir"], config["preprocess"]["output_dir"])
     pass
